@@ -10,7 +10,7 @@ spec:
     - name: error-rate
       interval: 30s
       count: 3
-      successCondition: "result < {{args.failure-threshold}}"
+      successCondition: "result < 95"
       provider:
         prometheus:
           address: http://prometheus.monitoring.svc.cluster.local
