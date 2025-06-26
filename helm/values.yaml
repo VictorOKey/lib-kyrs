@@ -1,9 +1,9 @@
 dotnet:
-  image: myregistry/dotnet-app:latest
+  image: dotnetcorelibrary:latest
   replicas: 2
 
 go:
-  image: myregistry/go-app:latest
+  image: go-search-service:latest
   replicas: 1
 
 vault:
