@@ -13,7 +13,7 @@ spec:
       successCondition: "result < 95"
       provider:
         prometheus:
-          address: "http://prometheus.monitoring:9090"
+          address: http://prometheus.monitoring:9090
           query: |
             sum(rate(nginx_ingress_controller_requests{status=~"5.."}[1m])) 
             /
