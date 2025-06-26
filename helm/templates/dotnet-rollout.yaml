@@ -2,10 +2,13 @@ apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: dotnet-app
+  namespace: lib
 spec:
   replicas: {{ .Values.dotnet.replicas }}
   strategy:
     canary:
+      canaryService: dotnet-app-canary
+      stableService: dotnet-app-stable
       steps:
         - setWeight: 20
         - pause: { duration: 10s }
@@ -38,7 +41,6 @@ spec:
             secretKeyRef:
               name: vault-secret
               key: {{ .Values.vault.secretKey }}
-        # Сайдкар vault-agent не нужен если есть mutating webhook, он сам подставит env
         resources:
           requests:
             cpu: 200m
@@ -46,7 +48,6 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
-      # Анотация для bank-vaults webhook (ВАЖНО!)
       annotations:
         vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
         vault.security.banzaicloud.io/vault-role: "myapp-role"

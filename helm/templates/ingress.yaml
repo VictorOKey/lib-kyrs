@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: myapp-ingress
+  namespace: lib
   annotations:
     kubernetes.io/ingress.class: "nginx"
     # Для сбора метрик с ингресса (Prometheus scrape annotations или что-то специфичное для вашего ingress)
