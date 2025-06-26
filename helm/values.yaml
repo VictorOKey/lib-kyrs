@@ -1,0 +1,15 @@
+dotnet:
+  image: myregistry/dotnet-app:latest
+  replicas: 2
+
+go:
+  image: myregistry/go-app:latest
+  replicas: 1
+
+vault:
+  secretPath: secret/data/myapp
+  secretKey: MY_SECRET_KEY
+
+ingress:
+  enabled: true
+  host: myapp.local

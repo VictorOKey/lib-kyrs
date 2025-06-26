@@ -1,0 +1,4 @@
+apiVersion: v2
+name: myapp
+description: Example helm chart for ArgoCD + Rollouts + HPA + Vault
+version: 0.1.0

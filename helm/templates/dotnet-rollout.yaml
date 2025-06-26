@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: dotnet-app
+spec:
+  replicas: {{ .Values.dotnet.replicas }}
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 10s }
+        - setWeight: 50
+        - pause: { duration: 20s }
+        - setWeight: 100
+      analysis:
+        templates:
+        - templateName: error-rate
+        args:
+        - name: failure-threshold
+          value: "5"
+  selector:
+    matchLabels:
+      app: dotnet-app
+  template:
+    metadata:
+      labels:
+        app: dotnet-app
+    spec:
+      serviceAccountName: default
+      containers:
+      - name: dotnet-app
+        image: {{ .Values.dotnet.image }}
+        ports:
+        - containerPort: 80
+        env:
+        - name: MY_SECRET_VALUE
+          valueFrom:
+            secretKeyRef:
+              name: vault-secret
+              key: {{ .Values.vault.secretKey }}
+        # Сайдкар vault-agent не нужен если есть mutating webhook, он сам подставит env
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+      # Анотация для bank-vaults webhook (ВАЖНО!)
+      annotations:
+        vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
+        vault.security.banzaicloud.io/vault-role: "myapp-role"
+        vault.security.banzaicloud.io/vault-path: "{{ .Values.vault.secretPath }}"
+        vault.security.banzaicloud.io/vault-skip-verify: "true"

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-app
+spec:
+  replicas: {{ .Values.go.replicas }}
+  selector:
+    matchLabels:
+      app: go-app
+  template:
+    metadata:
+      labels:
+        app: go-app
+      annotations:
+        vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
+        vault.security.banzaicloud.io/vault-role: "myapp-role"
+        vault.security.banzaicloud.io/vault-path: "{{ .Values.vault.secretPath }}"
+        vault.security.banzaicloud.io/vault-skip-verify: "true"
+    spec:
+      containers:
+      - name: go-app
+        image: {{ .Values.go.image }}
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MY_SECRET_VALUE
+          valueFrom:
+            secretKeyRef:
+              name: vault-secret
+              key: {{ .Values.vault.secretKey }}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
