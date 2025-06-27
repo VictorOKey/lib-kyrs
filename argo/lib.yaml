@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lib
+spec:
+  destination:
+    namespace: lib
+    server: https://kubernetes.default.svc
+  source:
+    path: helm
+    repoURL: https://github.com/VictorOKey/lib-kyrs.git
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

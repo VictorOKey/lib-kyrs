@@ -1,15 +1,51 @@
+globalparam:
+  namespace: lib
+  name: myapp
+  templateName: error-rate
+  argName: failure-threshold
+
 dotnet:
+  name: dotnet-app
   image: dotnetcorelibrary:latest
-  replicas: 2
+  serviceAccountName: default
+  minReplicas: 2
+  maxReplicas: 5
+  number: 80
+  argsValue: "5"
+  averageUtilization: 50
 
 go:
+  name: go-app
   image: go-search-service:latest
   replicas: 1
+  number: 8080
+  annotations:
+        vaultAddr: "http://vault.vault:8200"
+        vaultRole: "myapp-role"
+        vaultPath: "{{ .Values.vault.secretPath }}"
+        vaultVerify: "true"
 
 vault:
+  name: vault-secret
   secretPath: secret/data/myapp
   secretKey: MY_SECRET_KEY
 
 ingress:
+  name: myapp-ingress
   enabled: true
   host: myapp.local
+
+analysis:
+  name: error-rate
+  successCondition: "result < 95"
+  argName: failure-threshold
+  prometheus:
+    address: http://prometheus.monitoring:9090
+
+monitor:
+  name: nginx-ingress
+  matchLabels:
+    appName: ingress-nginx
+    appComponent: controller
+  matchNames:
+    name: ingress-nginx

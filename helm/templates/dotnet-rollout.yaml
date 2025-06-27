@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: dotnet-app
-  namespace: lib
+  name: {{ .Values.dotnet.name}}
+  namespace: {{ .Values.globalparam.namespace}}
 spec:
   replicas: {{ .Values.dotnet.replicas }}
   strategy:
     canary:
-      canaryService: dotnet-app-canary
-      stableService: dotnet-app-stable
+      canaryService: {{ .Values.dotnet.name}}-canary
+      stableService: {{ .Values.dotnet.name}}-stable
       steps:
         - setWeight: 20
         - pause: { duration: 10s }
@@ -17,30 +17,30 @@ spec:
         - setWeight: 100
       analysis:
         templates:
-        - templateName: error-rate
+        - templateName: {{ .Values.globalparam.templateName}}
         args:
-        - name: failure-threshold
-          value: "5"
+        - name: {{ .Values.globalparam.argName}}
+          value: {{ .Values.dotnet.argsValue}}
   selector:
     matchLabels:
-      app: dotnet-app
+      app: {{ .Values.dotnet.name}}
   template:
     metadata:
       labels:
-        app: dotnet-app
+        app: {{ .Values.dotnet.name}}
     spec:
-      serviceAccountName: default
+      serviceAccountName: {{ .Values.dotnet.serviceAccountName}}
       containers:
-      - name: dotnet-app
-        image: {{ .Values.dotnet.image }}
+      - name: {{ .Values.dotnet.name}}
+        image: {{ .Values.dotnet.image}}
         ports:
-        - containerPort: 80
+        - containerPort: {{ .Values.dotnet.number}}
         env:
         - name: MY_SECRET_VALUE
           valueFrom:
             secretKeyRef:
-              name: vault-secret
-              key: {{ .Values.vault.secretKey }}
+              name: {{ .Values.vault.name}}
+              key: {{ .Values.vault.secretKey}}
         resources:
           requests:
             cpu: 200m

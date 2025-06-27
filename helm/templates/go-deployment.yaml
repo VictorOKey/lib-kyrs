@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-app
-  namespace: lib
+  name: {{ .Values.go.name}}
+  namespace: {{ .Values.globalparam.namespace}}
 spec:
   replicas: {{ .Values.go.replicas }}
   selector:
     matchLabels:
-      app: go-app
+      app: {{ .Values.go.name}}
   template:
     metadata:
       labels:
-        app: go-app
+        app: {{ .Values.go.name}}
       annotations:
-        vault.security.banzaicloud.io/vault-addr: "http://vault.vault:8200"
-        vault.security.banzaicloud.io/vault-role: "myapp-role"
-        vault.security.banzaicloud.io/vault-path: "{{ .Values.vault.secretPath }}"
-        vault.security.banzaicloud.io/vault-skip-verify: "true"
+        vault.security.banzaicloud.io/vault-addr: {{ .Values.go.annotations.vaultAddr}}
+        vault.security.banzaicloud.io/vault-role: {{ .Values.go.annotations.vaultRole}}
+        vault.security.banzaicloud.io/vault-path: {{ .Values.go.annotations.vaultPath}}
+        vault.security.banzaicloud.io/vault-skip-verify: {{ .Values.go.annotations.vaultVerify}}
     spec:
       containers:
-      - name: go-app
+      - name: {{ .Values.go.name}}
         image: {{ .Values.go.image }}
         ports:
-        - containerPort: 8080
+        - containerPort: {{ .Values.go.number}}
         env:
         - name: MY_SECRET_VALUE
           valueFrom:
             secretKeyRef:
-              name: vault-secret
+              name: {{ .Values.vault.name}}
               key: {{ .Values.vault.secretKey }}
         resources:
           requests:

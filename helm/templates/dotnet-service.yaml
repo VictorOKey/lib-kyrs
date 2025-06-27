@@ -1,25 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: dotnet-app-stable
-  namespace: lib
+  name: {{ .Values.dotnet.name}}-stable
+  namespace: {{ .Values.globalparam.namespace}}
 spec:
   selector:
-    app: dotnet-app
+    app: {{ .Values.dotnet.name}}
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: {{ .Values.dotnet.number}}
+      targetPort: {{ .Values.dotnet.number}}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: dotnet-app-canary
-  namespace: lib
+  name: {{ .Values.dotnet.name}}-canary
+  namespace: {{ .Values.globalparam.namespace}}
 spec:
   selector:
-    app: dotnet-app
+    app: {{ .Values.dotnet.name}}
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: {{ .Values.dotnet.number}}
+      targetPort: {{ .Values.dotnet.number}}

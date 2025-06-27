@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+spec:
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  source:
+    path: ''
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 75.6.0
+    chart: kube-prometheus-stack
+    helm:
+      values: |
+        rbac:
+          create: true
+        serviceAccounts:
+          server:
+            create: true
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+          tls:
+            enabled: false
+          tlsProxy:
+            enabled: false
+        admissionWebhooks:
+          failurePolicy: Ignore
+          enabled: false
+  sources: []
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AnalysisTemplate
 metadata:
-  name: error-rate
-  namespace: lib
+  name: {{ .Values.analysis.name}}
+  namespace: {{ .Values.globalparam.namespace}}
 spec:
   args:
-    - name: failure-threshold
+    - name: {{ .Values.analysis.argName}}
   metrics:
-    - name: error-rate
+    - name: {{ .Values.analysis.name}}
       interval: 30s
       count: 3
-      successCondition: "result < 95"
+      successCondition: {{ .Values.analysis.successCondition}}
       provider:
         prometheus:
-          address: http://prometheus.monitoring:9090
+          address: {{ .Values.analysis.prometheus.address}}
           query: |
             sum(rate(nginx_ingress_controller_requests{status=~"5.."}[1m])) 
             /

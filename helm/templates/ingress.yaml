@@ -2,8 +2,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: myapp-ingress
-  namespace: lib
+  name: {{ .Values.ingress.name}}
+  namespace: {{ .Values.globalparam.namespace}}
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/rewrite-target: /
@@ -16,14 +16,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: dotnet-app
+                name: {{ .Values.dotnet.name}}
                 port:
-                  number: 80
+                  number: {{ .Values.dotnet.number}}
           - path: /go
             pathType: Prefix
             backend:
               service:
-                name: go-app
+                name: {{ .Values.go.name}}
                 port:
-                  number: 8080
+                  number: {{ .Values.go.number}}
 {{- end }}

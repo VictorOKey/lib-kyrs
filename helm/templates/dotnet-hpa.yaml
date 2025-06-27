@@ -1,15 +1,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: dotnet-app-hpa
-  namespace: lib
+  name: {{ .Values.dotnet.name}}-hpa
+  namespace: {{ .Values.globalparam.namespace}}
 spec:
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
-    name: dotnet-app
-  minReplicas: 2
-  maxReplicas: 5
+    name: {{ .Values.dotnet.name}}
+  minReplicas: {{ .Values.dotnet.minReplicas}}
+  maxReplicas: {{ .Values.dotnet.maxReplicas}}
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
@@ -33,4 +33,4 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 50
+          averageUtilization: {{ .Values.dotnet.averageUtilization}}

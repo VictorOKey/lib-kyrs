@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-rollouts
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argo-rollouts
+spec:
+  project: default
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 2.39.6
+    helm:
+      values: |
+        controller:
+          replicas: 2
+          
+          metrics:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+              namespace: monitoring
+          
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: 200m
+  
+        dashboard:
+          enabled: true
+          
+          service:
+            type: ClusterIP
+            port: 3100
+    chart: argo-rollouts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
